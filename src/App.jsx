@@ -218,46 +218,38 @@ const DataAnalyzer = () => {
     return match[1] + '-' + match[2]; // Format "MM-DD"
   };
 
-  const getDayOfYear = (dateStr) => {
+  // const getDayOfYear = (dateStr) => {
     // Extraire directement du string pour éviter les problèmes de timezone
     // Format attendu : "YYYY-MM-DD..." ou "YYYY-MM-DDTHH:MM:SS..."
-    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!match) return 0;
-    
-    const year = parseInt(match[1]);
-    const month = parseInt(match[2]);
-    const day = parseInt(match[3]);
-    
-    // Calculer le jour de l'année (1er janvier = 1)
-    const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
-    // Année bissextile
-    const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-    if (isLeap) daysInMonth[1] = 29;
-    
-    let dayOfYear = day;
-    for (let i = 0; i < month - 1; i++) {
-      dayOfYear += daysInMonth[i];
-    }
-    
-    return dayOfYear;
-  };
+  // const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  // if (!match) return 0;
+  //   // const year = parseInt(match[1]);
+  // const month = parseInt(match[2]);
+  // const day = parseInt(match[3]);
+  //     // Calculer le jour de l'année (1er janvier = 1)
+  // const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  //     // Année bissextile
+  // const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  // if (isLeap) daysInMonth[1] = 29;
+  //   // let dayOfYear = day;
+  // for (let i = 0; i < month - 1; i++) {
+  // dayOfYear += daysInMonth[i];
+  // }
+  //   // return dayOfYear;
+  // };
 
-  const parseMonthDayToDayOfYear = (monthDayStr) => {
+  // const parseMonthDayToDayOfYear = (monthDayStr) => {
     // Calcul manuel pour éviter les problèmes de timezone (identique à getDayOfYear)
-    const [month, day] = monthDayStr.split('-').map(Number);
-    
-    // Calculer le jour de l'année (1er janvier = 1)
+  // const [month, day] = monthDayStr.split('-').map(Number);
+  //     // Calculer le jour de l'année (1er janvier = 1)
     // Utiliser 2024 (année bissextile) comme référence pour cohérence
-    const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
-    let dayOfYear = day;
-    for (let i = 0; i < month - 1; i++) {
-      dayOfYear += daysInMonth[i];
-    }
-    
-    return dayOfYear;
-  };
+  // const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  //   // let dayOfYear = day;
+  // for (let i = 0; i < month - 1; i++) {
+  // dayOfYear += daysInMonth[i];
+  // }
+  //   // return dayOfYear;
+  // };
 
   // NEW: Fonction pour obtenir la dernière année dans les données
   const getLastYearFromData = () => {
@@ -3151,13 +3143,13 @@ const DataAnalyzer = () => {
 
                         const getY = (value) => 530 - ((value - yMin) * yScale);
 
-                        const minY = getY(box.min);
+  // const minY = getY(box.min);
                         const p5Y = getY(box.p5);
                         const q1Y = getY(box.q1);
                         const medianY = getY(box.median);
                         const q3Y = getY(box.q3);
                         const p95Y = getY(box.p95);
-                        const maxY = getY(box.max);
+  // const maxY = getY(box.max);
 
                         if (boxplotType === 'boxplot') return (
                           <g key={idx}>
@@ -3454,13 +3446,13 @@ const DataAnalyzer = () => {
                         
                         // Régression linéaire
                         const n = valuePoints.length;
-                        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+                        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
                         for (let i = 0; i < n; i++) {
                           sumX += valuePoints[i].x;
                           sumY += valuePoints[i].y;
                           sumXY += valuePoints[i].x * valuePoints[i].y;
                           sumX2 += valuePoints[i].x * valuePoints[i].x;
-                          sumY2 += valuePoints[i].y * valuePoints[i].y;
+  // sumY2 += valuePoints[i].y * valuePoints[i].y;
                         }
                         
                         const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
