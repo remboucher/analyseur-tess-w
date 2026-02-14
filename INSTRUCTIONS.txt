@@ -1,0 +1,267 @@
+GUIDE DE DÉPLOIEMENT - ANALYSEUR TESS-W
+========================================
+
+Ce dossier contient TOUS les fichiers nécessaires pour déployer l'Analyseur TESS-W.
+
+STRUCTURE DU PROJET
+===================
+
+analyseur-tess-w-deploy/
+├── public/
+│   └── index.html           ← Page HTML principale
+├── src/
+│   ├── index.js            ← Point d'entrée React
+│   └── App.jsx             ← Code complet de l'analyseur (v6.0)
+├── .gitignore              ← Fichiers à ignorer par Git
+├── netlify.toml            ← Configuration Netlify
+├── package.json            ← Dépendances (TypeScript 4.9.5 ✅)
+├── README.md               ← Documentation
+└── INSTRUCTIONS.txt        ← Ce fichier
+
+═══════════════════════════════════════════════════════════════
+
+OPTION 1 : DÉPLOIEMENT SUR NETLIFY (Recommandé - 5 minutes)
+═══════════════════════════════════════════════════════════════
+
+ÉTAPE 1 : Créer un repo GitHub
+-------------------------------
+
+A. Via l'interface GitHub.com :
+
+1. Aller sur https://github.com
+2. Se connecter
+3. Cliquer sur le "+" en haut à droite → "New repository"
+4. Nom du repo : analyseur-tess-w
+5. Visibilité : Public (ou Private)
+6. NE PAS cocher "Add a README file"
+7. Cliquer "Create repository"
+
+B. Via le Terminal (Mac) :
+
+1. Ouvrir le Terminal
+2. Naviguer vers ce dossier :
+   cd [chemin vers]/analyseur-tess-w-deploy
+
+3. Initialiser Git :
+   git init
+   git add .
+   git commit -m "Initial commit - Analyseur TESS-W v6.0"
+
+4. Lier au repo GitHub :
+   git remote add origin https://github.com/remboucher/analyseur-tess-w.git
+   git branch -M main
+   git push -u origin main
+
+ÉTAPE 2 : Déployer sur Netlify
+-------------------------------
+
+1. Aller sur https://netlify.com
+2. Se connecter avec GitHub
+3. Cliquer "Add new site" → "Import an existing project"
+4. Choisir "Deploy with GitHub"
+5. Autoriser Netlify
+6. Sélectionner votre repo "analyseur-tess-w"
+7. Configuration (normalement auto-détectée) :
+   - Build command: npm run build
+   - Publish directory: build
+8. Cliquer "Deploy site"
+9. Attendre 2-3 minutes
+10. TERMINÉ ! 🎉
+
+Votre site sera accessible à :
+https://random-name-12345.netlify.app
+
+ÉTAPE 3 : Personnaliser l'URL (optionnel)
+------------------------------------------
+
+1. Dans Netlify, aller dans "Site settings"
+2. Cliquer "Change site name"
+3. Entrer : analyseur-tess-w
+4. Sauvegarder
+
+Nouvelle URL :
+https://analyseur-tess-w.netlify.app
+
+═══════════════════════════════════════════════════════════════
+
+OPTION 2 : UTILISATION EN LOCAL (Mac)
+═══════════════════════════════════════════════════════════════
+
+PRÉREQUIS : Node.js
+-------------------
+
+Vérifier si installé :
+node --version
+
+Si pas installé :
+1. Aller sur https://nodejs.org
+2. Télécharger la version LTS
+3. Installer
+4. Redémarrer le Terminal
+
+INSTALLATION
+------------
+
+1. Ouvrir le Terminal
+2. Naviguer vers ce dossier :
+   cd [chemin vers]/analyseur-tess-w-deploy
+
+3. Installer les dépendances :
+   npm install
+
+   (Attendre 1-2 minutes)
+
+4. Lancer l'application :
+   npm start
+
+L'app s'ouvre automatiquement à http://localhost:3000
+
+UTILISATION QUOTIDIENNE
+-----------------------
+
+1. Ouvrir le Terminal
+2. cd [chemin vers]/analyseur-tess-w-deploy
+3. npm start
+4. Utiliser l'app dans le navigateur
+5. Pour arrêter : Ctrl+C dans le Terminal
+
+═══════════════════════════════════════════════════════════════
+
+OPTION 3 : DÉPLOIEMENT SUR VERCEL
+═══════════════════════════════════════════════════════════════
+
+1. Pusher le code sur GitHub (voir Option 1, Étape 1)
+2. Aller sur https://vercel.com
+3. Se connecter avec GitHub
+4. Cliquer "Add New" → "Project"
+5. Importer le repo "analyseur-tess-w"
+6. Configuration auto-détectée :
+   - Framework: Create React App
+   - Build Command: npm run build
+   - Output Directory: build
+7. Cliquer "Deploy"
+8. Attendre 2-3 minutes
+9. TERMINÉ !
+
+URL : https://analyseur-tess-w.vercel.app
+
+═══════════════════════════════════════════════════════════════
+
+MODIFICATIONS DU CODE
+═══════════════════════════════════════════════════════════════
+
+Pour modifier l'analyseur :
+
+1. Éditer le fichier : src/App.jsx
+2. Si en local : L'app se recharge automatiquement
+3. Si sur GitHub/Netlify/Vercel :
+   git add .
+   git commit -m "Description de vos changements"
+   git push
+
+   → Le site se met à jour automatiquement !
+
+═══════════════════════════════════════════════════════════════
+
+RÉSOLUTION DE PROBLÈMES
+═══════════════════════════════════════════════════════════════
+
+ERREUR : "npm: command not found"
+→ Node.js n'est pas installé. Voir PRÉREQUIS ci-dessus.
+
+ERREUR : "port 3000 already in use"
+→ Une autre app utilise le port.
+   Solution : PORT=3001 npm start
+
+ERREUR DE BUILD sur Netlify
+→ Vérifier que package.json contient : "typescript": "4.9.5"
+→ C'est déjà le cas dans ce projet ✅
+
+L'app ne se charge pas
+→ Vider le cache du navigateur (Cmd+Shift+R sur Mac)
+→ Vérifier la console du navigateur (F12)
+
+═══════════════════════════════════════════════════════════════
+
+CONTENU DES FICHIERS CLÉS
+═══════════════════════════════════════════════════════════════
+
+package.json
+------------
+- Contient TOUTES les dépendances
+- TypeScript 4.9.5 (compatible react-scripts) ✅
+- React 18.2.0
+- Recharts 2.5.0
+
+src/App.jsx
+-----------
+- CODE COMPLET de l'Analyseur TESS-W v6.0
+- Toutes les fonctionnalités :
+  ✅ Histogrammes
+  ✅ Boxplot & Violin
+  ✅ Ridgeline avec contrôles
+  ✅ Scatterplot avec régressions
+  ✅ Chronologie
+  ✅ Filtres rapides
+  ✅ Export PNG
+
+netlify.toml
+------------
+- Configuration pour déploiement Netlify
+- Redirections SPA configurées
+
+.gitignore
+----------
+- Ignore node_modules/
+- Ignore build/
+- Ignore fichiers système
+
+═══════════════════════════════════════════════════════════════
+
+MISES À JOUR AUTOMATIQUES
+═══════════════════════════════════════════════════════════════
+
+Une fois déployé sur Netlify ou Vercel :
+
+1. Modifier le code localement
+2. git add .
+3. git commit -m "Description"
+4. git push
+
+→ Le site se redéploie automatiquement en 2-3 minutes !
+
+═══════════════════════════════════════════════════════════════
+
+SUPPORT
+═══════════════════════════════════════════════════════════════
+
+Liens utiles :
+- Documentation React : https://react.dev
+- Documentation Recharts : https://recharts.org
+- Netlify Docs : https://docs.netlify.com
+- Vercel Docs : https://vercel.com/docs
+
+Enrichisseur Astronomique (prérequis) :
+https://remboucher.github.io/enrichisseur-astronomique/
+
+═══════════════════════════════════════════════════════════════
+
+VERSION
+═══════════════════════════════════════════════════════════════
+
+Analyseur TESS-W v6.0
+Date : Février 2026
+Fichiers créés le : 13 février 2026
+
+Fonctionnalités v6.0 :
+- Ridgeline amélioré (zoom, contrôles, périodes vides)
+- Filtres rapides optimisés
+- Scatterplot avec régressions (linéaire + polynomiale)
+- Violin plot avec médianes visibles
+- Drag-and-drop fonctionnel
+- Titre mis à jour avec lien vers enrichisseur
+
+═══════════════════════════════════════════════════════════════
+
+PRÊT À DÉPLOYER ! 🚀
+═══════════════════════════════════════════════════════════════
