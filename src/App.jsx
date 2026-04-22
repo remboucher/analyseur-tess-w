@@ -1578,19 +1578,19 @@ const DataAnalyzer = () => {
     return () => clearTimeout(timer);
   }, [filters, dateRangeEnabled, dateRange, multiYearFilter, histogramData, boxplotData, scatterData]);
 
-  // v7.0: Fonction de calcul PSIE Sépaq
+  // v7.1: Fonction de calcul PSIE Sépaq (corrigée - par année)
   const calculatePSIE = () => {
     if (data.length === 0) {
       alert('Veuillez d\'abord charger un fichier .dat');
       return;
     }
 
-    addLog('Calcul PSIE Sépaq démarré');
+    addLog('Calcul PSIE Sépaq démarré (v7.1)');
     
-    // Identifier le photomètre (nom du fichier sans extension)
+    // Identifier le photomètre
     const photometre = fileName.replace('.dat', '').replace('.txt', '');
     
-    // Fonction helper pour calculer les stats d'un subset
+    // Fonction helper pour calculer les stats
     const calculateStats = (subset) => {
       if (subset.length === 0) {
         return { count: 0, mean: 0, median: 0, p99: 0, sd: 0 };
@@ -1613,24 +1613,50 @@ const DataAnalyzer = () => {
       return { count: n, mean, median, p99, sd };
     };
     
-    // Fonction helper pour filtrer par date MM-DD
-    const filterByDateRange = (data, startMMDD, endMMDD) => {
+    // v7.1: Détecter toutes les années présentes dans les données
+    const yearsSet = new Set();
+    data.forEach(d => {
+      if (d.date) {
+        const year = new Date(d.date).getFullYear();
+        if (!isNaN(year) && year >= 1900 && year <= 2100) {
+          yearsSet.add(year);
+        }
+      }
+    });
+    
+    const years = Array.from(yearsSet).sort((a, b) => a - b);
+    
+    if (years.length === 0) {
+      alert('Aucune année détectée dans les données. Vérifiez que la colonne "date" existe.');
+      return;
+    }
+    
+    addLog(`Années détectées: ${years.join(', ')}`);
+    
+    // v7.1: Fonction helper pour filtrer par date MM-DD ET année
+    const filterByDateRangeAndYear = (data, startMMDD, endMMDD, year) => {
       const [startMonth, startDay] = startMMDD.split('-').map(Number);
       const [endMonth, endDay] = endMMDD.split('-').map(Number);
       
       return data.filter(d => {
         if (!d.date) return false;
+        
         const date = new Date(d.date);
+        const dataYear = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
         
-        // Gérer le cas où la plage traverse le changement d'année
+        // Vérifier l'année
+        if (dataYear !== year) return false;
+        
+        // Vérifier la plage de dates (MM-DD)
         if (startMonth > endMonth) {
+          // Plage qui traverse le changement d'année (ex: 11-01 à 02-28)
           return (month > startMonth || (month === startMonth && day >= startDay)) ||
                  (month < endMonth || (month === endMonth && day <= endDay));
         }
         
-        // Cas normal
+        // Cas normal (ex: 01-01 à 03-15)
         if (month < startMonth || month > endMonth) return false;
         if (month === startMonth && day < startDay) return false;
         if (month === endMonth && day > endDay) return false;
@@ -1645,90 +1671,113 @@ const DataAnalyzer = () => {
         type: 'Avec neige - Sans Voie lactée',
         dateStart: '01-01',
         dateEnd: '03-15',
-        filters: d => d.msas > 8 && d.sun_alt < -18 && d.moon_alt < -5 && 
-                     d.gal_lat > 40 && d.sd_10min < 0.0101
+        filters: d => d.msas != null && !isNaN(d.msas) && 
+                     d.msas > 8 && 
+                     d.sun_alt != null && d.sun_alt < -18 && 
+                     d.moon_alt != null && d.moon_alt < -5 && 
+                     d.gal_lat != null && d.gal_lat > 40 && 
+                     d.sd_10min != null && d.sd_10min < 0.0101
       },
       {
         periode: 'b) du 1er avril au 1er juillet',
         type: 'Sans neige - Sans Voie lactée',
         dateStart: '04-01',
-        dateEnd: '06-30',
-        filters: d => d.msas > 8 && d.sun_alt < -18 && d.moon_alt < -5 && 
-                     d.gal_lat > 40 && d.sd_10min < 0.0101
+        dateEnd: '07-01',
+        filters: d => d.msas != null && !isNaN(d.msas) && 
+                     d.msas > 8 && 
+                     d.sun_alt != null && d.sun_alt < -18 && 
+                     d.moon_alt != null && d.moon_alt < -5 && 
+                     d.gal_lat != null && d.gal_lat > 40 && 
+                     d.sd_10min != null && d.sd_10min < 0.0101
       },
       {
         periode: 'c) du 1er avril au 1er octobre',
         type: 'Dégagé',
         dateStart: '04-01',
-        dateEnd: '09-30',
-        filters: d => d.msas > 8 && d.sun_alt < -18 && d.moon_alt < -5 && 
-                     d.sd_10min < 0.0101
+        dateEnd: '10-01',
+        filters: d => d.msas != null && !isNaN(d.msas) && 
+                     d.msas > 8 && 
+                     d.sun_alt != null && d.sun_alt < -18 && 
+                     d.moon_alt != null && d.moon_alt < -5 && 
+                     d.sd_10min != null && d.sd_10min < 0.0101
       },
       {
         periode: 'c) du 1er avril au 1er octobre',
         type: 'Nuageux',
         dateStart: '04-01',
-        dateEnd: '09-30',
-        filters: d => d.msas > 8 && d.sun_alt < -18 && d.moon_alt < -5 && 
-                     d.sd_10min > 0.0101
+        dateEnd: '10-01',
+        filters: d => d.msas != null && !isNaN(d.msas) && 
+                     d.msas > 8 && 
+                     d.sun_alt != null && d.sun_alt < -18 && 
+                     d.moon_alt != null && d.moon_alt < -5 && 
+                     d.sd_10min != null && d.sd_10min > 0.0101
       }
     ];
     
-    // Calculer les résultats pour chaque condition
-    const results = conditions.map(cond => {
-      // Filtrer par date
-      const dateFiltered = filterByDateRange(data, cond.dateStart, cond.dateEnd);
-      
-      // Appliquer les filtres spécifiques
-      const filtered = dateFiltered.filter(cond.filters);
-      
-      // Calculer les stats
-      const stats = calculateStats(filtered);
-      
-      addLog(`${cond.type}: ${stats.count} mesures`);
-      
-      return {
-        photometre,
-        periode: cond.periode,
-        type: cond.type,
-        data: stats.count,
-        mean: stats.mean,
-        p50: stats.median,
-        p99: stats.p99,
-        sd: stats.sd
-      };
+    // v7.1: Calculer pour chaque année
+    const allResults = [];
+    
+    years.forEach(year => {
+      conditions.forEach(cond => {
+        // Filtrer par date ET année
+        const dateFiltered = filterByDateRangeAndYear(data, cond.dateStart, cond.dateEnd, year);
+        
+        // Appliquer les filtres spécifiques
+        const filtered = dateFiltered.filter(cond.filters);
+        
+        // Calculer les stats
+        const stats = calculateStats(filtered);
+        
+        addLog(`${year} - ${cond.type}: ${stats.count} mesures`);
+        
+        allResults.push({
+          annee: year,
+          photometre,
+          periode: cond.periode,
+          type: cond.type,
+          data: stats.count,
+          mean: stats.mean,
+          p50: stats.median,
+          p99: stats.p99,
+          sd: stats.sd
+        });
+      });
     });
     
-    setPsieResults(results);
-    addLog('Calcul PSIE terminé');
+    setPsieResults(allResults);
+    addLog(`Calcul PSIE terminé: ${years.length} années, ${allResults.length} lignes`);
   };
   
-  // v7.0: Fonction pour copier les résultats PSIE dans le presse-papiers
+  // v7.1: Fonction pour copier les résultats PSIE (avec virgule décimale)
   const copyPSIEResults = () => {
     if (!psieResults) return;
     
-    // Format TSV (Tab-Separated Values) pour Excel/Google Sheets
-    let tsv = 'Photomètre\tPériode de collecte\tType de période/conditions\tNombre de mesures (Data)\tMoyenne (Mean)\tMédiane (P50)\t99e percentile (P99)\tÉcart-type (SD)\n';
+    // Format TSV avec virgule décimale pour Excel français
+    let tsv = 'Année\tPhotomètre\tPériode de collecte\tType de période/conditions\tNombre de mesures (Data)\tMoyenne (Mean)\tMédiane (P50)\t99e percentile (P99)\tÉcart-type (SD)\n';
     
     psieResults.forEach(r => {
-      tsv += `${r.photometre}\t${r.periode}\t${r.type}\t${r.data}\t${r.mean.toFixed(2)}\t${r.p50.toFixed(2)}\t${r.p99.toFixed(2)}\t${r.sd.toFixed(2)}\n`;
+      const meanStr = r.mean.toFixed(2).replace('.', ',');
+      const p50Str = r.p50.toFixed(2).replace('.', ',');
+      const p99Str = r.p99.toFixed(2).replace('.', ',');
+      const sdStr = r.sd.toFixed(2).replace('.', ',');
+      tsv += `${r.annee}\t${r.photometre}\t${r.periode}\t${r.type}\t${r.data}\t${meanStr}\t${p50Str}\t${p99Str}\t${sdStr}\n`;
     });
     
     navigator.clipboard.writeText(tsv).then(() => {
-      alert('✅ Résultats copiés dans le presse-papiers !\nVous pouvez les coller dans Excel ou Google Sheets.');
+      alert('✅ Résultats copiés dans le presse-papiers !\nVous pouvez les coller dans Excel ou Google Sheets.\n\nFormat: virgule décimale (,) pour Excel français');
     }).catch(() => {
       alert('❌ Erreur lors de la copie. Essayez le téléchargement CSV.');
     });
   };
   
-  // v7.0: Fonction pour télécharger les résultats en CSV
+  // v7.1: Fonction pour télécharger les résultats en CSV (point décimal international)
   const downloadPSIECSV = () => {
     if (!psieResults) return;
     
-    let csv = 'Photomètre,Période de collecte,Type de période/conditions,Nombre de mesures (Data),Moyenne (Mean),Médiane (P50),99e percentile (P99),Écart-type (SD)\n';
+    let csv = 'Année,Photomètre,Période de collecte,Type de période/conditions,Nombre de mesures (Data),Moyenne (Mean),Médiane (P50),99e percentile (P99),Écart-type (SD)\n';
     
     psieResults.forEach(r => {
-      csv += `"${r.photometre}","${r.periode}","${r.type}",${r.data},${r.mean.toFixed(2)},${r.p50.toFixed(2)},${r.p99.toFixed(2)},${r.sd.toFixed(2)}\n`;
+      csv += `${r.annee},"${r.photometre}","${r.periode}","${r.type}",${r.data},${r.mean.toFixed(2)},${r.p50.toFixed(2)},${r.p99.toFixed(2)},${r.sd.toFixed(2)}\n`;
     });
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -2353,7 +2402,7 @@ const DataAnalyzer = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}>
-                      <span>Résultats PSIE - {psieResults[0].photometre}</span>
+                      <span>Résultats PSIE - {psieResults[0].photometre} ({[...new Set(psieResults.map(r => r.annee))].sort((a,b) => a-b).join(', ')})</span>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button
                           onClick={copyPSIEResults}
@@ -2400,6 +2449,7 @@ const DataAnalyzer = () => {
                             background: 'rgba(100, 200, 255, 0.1)', 
                             borderBottom: '1px solid rgba(100, 200, 255, 0.3)' 
                           }}>
+                            <th style={{ padding: '0.5rem', textAlign: 'center', color: 'rgba(224, 230, 237, 0.7)' }}>Année</th>
                             <th style={{ padding: '0.5rem', textAlign: 'left', color: 'rgba(224, 230, 237, 0.7)' }}>Période</th>
                             <th style={{ padding: '0.5rem', textAlign: 'left', color: 'rgba(224, 230, 237, 0.7)' }}>Type</th>
                             <th style={{ padding: '0.5rem', textAlign: 'right', color: 'rgba(224, 230, 237, 0.7)' }}>Data</th>
@@ -2415,6 +2465,9 @@ const DataAnalyzer = () => {
                               borderBottom: '1px solid rgba(100, 200, 255, 0.1)',
                               background: idx % 2 === 0 ? 'transparent' : 'rgba(100, 200, 255, 0.05)'
                             }}>
+                              <td style={{ padding: '0.5rem', textAlign: 'center', color: 'rgba(224, 230, 237, 0.9)', fontWeight: 600 }}>
+                                {result.annee}
+                              </td>
                               <td style={{ padding: '0.5rem', color: 'rgba(224, 230, 237, 0.8)', whiteSpace: 'nowrap' }}>
                                 {result.periode}
                               </td>
@@ -2425,16 +2478,16 @@ const DataAnalyzer = () => {
                                 {result.data.toLocaleString('fr-FR')}
                               </td>
                               <td style={{ padding: '0.5rem', textAlign: 'right', color: 'rgba(224, 230, 237, 0.9)' }}>
-                                {result.mean.toFixed(2)}
+                                {result.mean.toFixed(2).replace('.', ',')}
                               </td>
                               <td style={{ padding: '0.5rem', textAlign: 'right', color: 'rgba(224, 230, 237, 0.9)' }}>
-                                {result.p50.toFixed(2)}
+                                {result.p50.toFixed(2).replace('.', ',')}
                               </td>
                               <td style={{ padding: '0.5rem', textAlign: 'right', color: 'rgba(224, 230, 237, 0.9)' }}>
-                                {result.p99.toFixed(2)}
+                                {result.p99.toFixed(2).replace('.', ',')}
                               </td>
                               <td style={{ padding: '0.5rem', textAlign: 'right', color: 'rgba(224, 230, 237, 0.9)' }}>
-                                {result.sd.toFixed(2)}
+                                {result.sd.toFixed(2).replace('.', ',')}
                               </td>
                             </tr>
                           ))}
