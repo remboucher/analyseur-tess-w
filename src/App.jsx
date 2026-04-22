@@ -1613,11 +1613,20 @@ const DataAnalyzer = () => {
       return { count: n, mean, median, p99, sd };
     };
     
-    // v7.1: Détecter toutes les années présentes dans les données
+    // v7.1: Utiliser la même colonne de date que le reste de l'app (columns[1] = 2ème colonne)
+    if (columns.length < 2) {
+      alert('Le fichier doit avoir au moins 2 colonnes (la 2ème est la date)');
+      return;
+    }
+    
+    const dateColumn = columns[1]; // 2nd column = Local Date & Time
+    addLog(`Utilisation de la colonne de date: "${dateColumn}"`)
+    
+    // Détecter toutes les années présentes dans les données
     const yearsSet = new Set();
     data.forEach(d => {
-      if (d.date) {
-        const year = new Date(d.date).getFullYear();
+      if (d[dateColumn]) {
+        const year = new Date(d[dateColumn]).getFullYear();
         if (!isNaN(year) && year >= 1900 && year <= 2100) {
           yearsSet.add(year);
         }
@@ -1627,7 +1636,7 @@ const DataAnalyzer = () => {
     const years = Array.from(yearsSet).sort((a, b) => a - b);
     
     if (years.length === 0) {
-      alert('Aucune année détectée dans les données. Vérifiez que la colonne "date" existe.');
+      alert(`Aucune année détectée dans la colonne "${dateColumn}".\nVérifiez le format des dates.`);
       return;
     }
     
@@ -1639,9 +1648,9 @@ const DataAnalyzer = () => {
       const [endMonth, endDay] = endMMDD.split('-').map(Number);
       
       return data.filter(d => {
-        if (!d.date) return false;
+        if (!d[dateColumn]) return false;
         
-        const date = new Date(d.date);
+        const date = new Date(d[dateColumn]);
         const dataYear = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
