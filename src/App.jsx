@@ -1596,7 +1596,7 @@ const DataAnalyzer = () => {
         return { count: 0, mean: 0, median: 0, p99: 0, sd: 0 };
       }
       
-      const values = subset.map(d => d.msas).filter(v => v != null && !isNaN(v)).sort((a, b) => a - b);
+      const values = subset.map(d => d.MSAS).filter(v => v != null && !isNaN(v)).sort((a, b) => a - b);
       const n = values.length;
       
       if (n === 0) {
@@ -1680,8 +1680,8 @@ const DataAnalyzer = () => {
         type: 'Avec neige - Sans Voie lactée',
         dateStart: '01-01',
         dateEnd: '03-15',
-        filters: d => d.msas != null && !isNaN(d.msas) && 
-                     d.msas > 8 && 
+        filters: d => d.MSAS != null && !isNaN(d.MSAS) && 
+                     d.MSAS > 8 && 
                      d.sun_alt != null && d.sun_alt < -18 && 
                      d.moon_alt != null && d.moon_alt < -5 && 
                      d.gal_lat != null && d.gal_lat > 40 && 
@@ -1692,8 +1692,8 @@ const DataAnalyzer = () => {
         type: 'Sans neige - Sans Voie lactée',
         dateStart: '04-01',
         dateEnd: '07-01',
-        filters: d => d.msas != null && !isNaN(d.msas) && 
-                     d.msas > 8 && 
+        filters: d => d.MSAS != null && !isNaN(d.MSAS) && 
+                     d.MSAS > 8 && 
                      d.sun_alt != null && d.sun_alt < -18 && 
                      d.moon_alt != null && d.moon_alt < -5 && 
                      d.gal_lat != null && d.gal_lat > 40 && 
@@ -1704,8 +1704,8 @@ const DataAnalyzer = () => {
         type: 'Dégagé',
         dateStart: '04-01',
         dateEnd: '10-01',
-        filters: d => d.msas != null && !isNaN(d.msas) && 
-                     d.msas > 8 && 
+        filters: d => d.MSAS != null && !isNaN(d.MSAS) && 
+                     d.MSAS > 8 && 
                      d.sun_alt != null && d.sun_alt < -18 && 
                      d.moon_alt != null && d.moon_alt < -5 && 
                      d.sd_10min != null && d.sd_10min < 0.0101
@@ -1715,8 +1715,8 @@ const DataAnalyzer = () => {
         type: 'Nuageux',
         dateStart: '04-01',
         dateEnd: '10-01',
-        filters: d => d.msas != null && !isNaN(d.msas) && 
-                     d.msas > 8 && 
+        filters: d => d.MSAS != null && !isNaN(d.MSAS) && 
+                     d.MSAS > 8 && 
                      d.sun_alt != null && d.sun_alt < -18 && 
                      d.moon_alt != null && d.moon_alt < -5 && 
                      d.sd_10min != null && d.sd_10min > 0.0101
