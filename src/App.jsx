@@ -4294,10 +4294,10 @@ const DataAnalyzer = () => {
                     
                     {/* v7.1: Graphiques - Effet des nuages et Évolution P50 */}
                     {cloudEffect && cloudEffect.length > 0 && (
-                      <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+                      <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                         
                         {/* Graphique 1: Effet des nuages (GAUCHE) */}
-                        <div style={{ flex: '0 0 calc(50% - 0.5rem)', padding: '1.5rem', background: 'rgba(20, 25, 45, 0.6)', border: '1px solid rgba(100, 200, 255, 0.3)', borderRadius: '4px' }}>
+                        <div style={{ flex: '1 1 45%', maxWidth: 'calc(50% - 0.5rem)', padding: '1.5rem', background: 'rgba(20, 25, 45, 0.6)', border: '1px solid rgba(100, 200, 255, 0.3)', borderRadius: '4px', boxSizing: 'border-box' }}>
                           <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'rgba(100, 200, 255, 0.9)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                             📊 Effet des nuages
                           </div>
@@ -4393,7 +4393,7 @@ const DataAnalyzer = () => {
                         
                         {/* Graphique 2: Évolution P50 (DROITE) */}
                         {p50Evolution && (
-                          <div style={{ flex: '0 0 calc(50% - 0.5rem)', padding: '1.5rem', background: 'rgba(20, 25, 45, 0.6)', border: '1px solid rgba(100, 200, 255, 0.3)', borderRadius: '4px' }}>
+                          <div style={{ flex: '1 1 45%', maxWidth: 'calc(50% - 0.5rem)', padding: '1.5rem', background: 'rgba(20, 25, 45, 0.6)', border: '1px solid rgba(100, 200, 255, 0.3)', borderRadius: '4px', boxSizing: 'border-box' }}>
                             <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'rgba(100, 200, 255, 0.9)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                               📈 Évolution de la médiane
                             </div>
@@ -4482,10 +4482,10 @@ const DataAnalyzer = () => {
                             <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(100, 200, 255, 0.2)' }}>
                               <div style={{ fontSize: '0.7rem', color: 'rgba(224, 230, 237, 0.7)', marginBottom: '0.4rem' }}>Type de période/condition :</div>
                               <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                                <button onClick={() => setSelectedCondition('avec_neige')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'avec_neige' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)', border: `2px solid rgba(255, 255, 255, ${selectedCondition === 'avec_neige' ? '1' : '0.5'})`, borderRadius: '4px', color: selectedCondition === 'avec_neige' ? 'rgba(20, 25, 45, 0.95)' : 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'avec_neige' ? 700 : 400 }}>du 1er janv au 15 mars</button>
-                                <button onClick={() => setSelectedCondition('sans_neige')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'sans_neige' ? 'rgba(102, 187, 106, 0.8)' : 'rgba(102, 187, 106, 0.2)', border: `2px solid rgba(102, 187, 106, ${selectedCondition === 'sans_neige' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'sans_neige' ? 700 : 400 }}>du 1er avr au 1er juil</button>
-                                <button onClick={() => setSelectedCondition('degage')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'degage' ? 'rgba(100, 200, 255, 0.8)' : 'rgba(100, 200, 255, 0.2)', border: `2px solid rgba(100, 200, 255, ${selectedCondition === 'degage' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'degage' ? 700 : 400 }}>du 1er avr au 1er oct</button>
-                                <button onClick={() => setSelectedCondition('nuageux')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'nuageux' ? 'rgba(158, 158, 158, 0.8)' : 'rgba(158, 158, 158, 0.2)', border: `2px solid rgba(158, 158, 158, ${selectedCondition === 'nuageux' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'nuageux' ? 700 : 400 }}>du 1er avr au 1er oct</button>
+                                <button onClick={() => setSelectedCondition('avec_neige')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'avec_neige' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)', border: `2px solid rgba(255, 255, 255, ${selectedCondition === 'avec_neige' ? '1' : '0.5'})`, borderRadius: '4px', color: selectedCondition === 'avec_neige' ? 'rgba(20, 25, 45, 0.95)' : 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'avec_neige' ? 700 : 400 }}>Hiver - sans Voie lactée</button>
+                                <button onClick={() => setSelectedCondition('sans_neige')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'sans_neige' ? 'rgba(102, 187, 106, 0.8)' : 'rgba(102, 187, 106, 0.2)', border: `2px solid rgba(102, 187, 106, ${selectedCondition === 'sans_neige' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'sans_neige' ? 700 : 400 }}>Printemps - sans Voie lactée</button>
+                                <button onClick={() => setSelectedCondition('degage')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'degage' ? 'rgba(100, 200, 255, 0.8)' : 'rgba(100, 200, 255, 0.2)', border: `2px solid rgba(100, 200, 255, ${selectedCondition === 'degage' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'degage' ? 700 : 400 }}>Saison chaude - dégagé</button>
+                                <button onClick={() => setSelectedCondition('nuageux')} style={{ padding: '0.3rem 0.6rem', background: selectedCondition === 'nuageux' ? 'rgba(158, 158, 158, 0.8)' : 'rgba(158, 158, 158, 0.2)', border: `2px solid rgba(158, 158, 158, ${selectedCondition === 'nuageux' ? '1' : '0.5'})`, borderRadius: '4px', color: 'rgba(224, 230, 237, 0.95)', fontSize: '0.7rem', cursor: 'pointer', fontWeight: selectedCondition === 'nuageux' ? 700 : 400 }}>Saison chaude - nuageux</button>
                               </div>
                             </div>
                           </div>
