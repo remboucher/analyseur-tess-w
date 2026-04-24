@@ -38,6 +38,8 @@ const DataAnalyzer = () => {
   const [isDragging, setIsDragging] = useState(false); // v6.0: état du drag-and-drop
   const [psieResults, setPsieResults] = useState(null); // v7.0: résultats PSIE Sépaq
   const [cloudEffect, setCloudEffect] = useState(null); // v7.1: données effet nuages
+  const [snowEffect, setSnowEffect] = useState(null); // v7.2: données effet neige
+  const [selectedEffect, setSelectedEffect] = useState('nuages'); // v7.2: effet affiché (nuages ou neige)
   const [hiddenYears, setHiddenYears] = useState([]); // v7.1: années cachées graphique effet nuages
   const [p50Evolution, setP50Evolution] = useState(null); // v7.1: données évolution P50
   const [hiddenYearsP50, setHiddenYearsP50] = useState([]); // v7.1: années cachées graphique P50
@@ -1781,6 +1783,26 @@ const DataAnalyzer = () => {
     
     setCloudEffect(cloudEffectData);
     addLog(`Effet nuages calculé pour ${cloudEffectData.length} années`);
+    
+    // v7.2: Calculer les données pour le graphique "Effet de la neige"
+    const snowEffectData = years.map(year => {
+      const yearResults = allResults.filter(r => r.annee === year);
+      const avec_neige = yearResults.find(r => r.type === 'Avec neige - Sans Voie lactée');
+      const sans_neige = yearResults.find(r => r.type === 'Sans neige - Sans Voie lactée');
+      
+      if (avec_neige && sans_neige && avec_neige.p50 != null && sans_neige.p50 != null) {
+        return {
+          annee: year,
+          effet: avec_neige.p50 - sans_neige.p50,
+          p50_avec_neige: avec_neige.p50,
+          p50_sans_neige: sans_neige.p50
+        };
+      }
+      return null;
+    }).filter(d => d !== null);
+    
+    setSnowEffect(snowEffectData);
+    addLog(`Effet neige calculé pour ${snowEffectData.length} années`);
     
     // v7.1: Calculer les données pour le graphique "Évolution P50"
     const p50EvolutionData = years.map(year => {
@@ -4296,18 +4318,52 @@ const DataAnalyzer = () => {
                     {cloudEffect && cloudEffect.length > 0 && (
                       <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                         
-                        {/* Graphique 1: Effet des nuages (GAUCHE) */}
+                        {/* Graphique 1: Effet des nuages / neige (GAUCHE) */}
                         <div style={{ flex: '1 1 45%', maxWidth: 'calc(50% - 0.5rem)', padding: '1.5rem', background: 'rgba(20, 25, 45, 0.6)', border: '1px solid rgba(100, 200, 255, 0.3)', borderRadius: '4px', boxSizing: 'border-box' }}>
-                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'rgba(100, 200, 255, 0.9)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                            📊 Effet des nuages
+                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'rgba(100, 200, 255, 0.9)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                            📊 {selectedEffect === 'nuages' ? 'Effet des nuages' : 'Effet de la neige'}
                           </div>
                           <div style={{ fontSize: '0.75rem', color: 'rgba(224, 230, 237, 0.7)', marginBottom: '1rem', fontStyle: 'italic' }}>
-                            P50 nuageux - P50 dégagé
+                            {selectedEffect === 'nuages' ? 'P50 nuageux - P50 dégagé' : 'P50 hiver - P50 printemps'}
+                          </div>
+                          
+                          {/* Sélecteur d'effet */}
+                          <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.4rem' }}>
+                            <button
+                              onClick={() => setSelectedEffect('nuages')}
+                              style={{
+                                padding: '0.3rem 0.8rem',
+                                background: selectedEffect === 'nuages' ? 'rgba(100, 200, 255, 0.6)' : 'rgba(100, 200, 255, 0.15)',
+                                border: `2px solid ${selectedEffect === 'nuages' ? 'rgba(100, 200, 255, 1)' : 'rgba(100, 200, 255, 0.4)'}`,
+                                borderRadius: '4px',
+                                color: 'rgba(224, 230, 237, 0.95)',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                fontWeight: selectedEffect === 'nuages' ? 700 : 400
+                              }}
+                            >
+                              ☁️ Nuages
+                            </button>
+                            <button
+                              onClick={() => setSelectedEffect('neige')}
+                              style={{
+                                padding: '0.3rem 0.8rem',
+                                background: selectedEffect === 'neige' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.15)',
+                                border: `2px solid ${selectedEffect === 'neige' ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.4)'}`,
+                                borderRadius: '4px',
+                                color: selectedEffect === 'neige' ? 'rgba(20, 25, 45, 0.95)' : 'rgba(224, 230, 237, 0.95)',
+                                fontSize: '0.75rem',
+                                cursor: 'pointer',
+                                fontWeight: selectedEffect === 'neige' ? 700 : 400
+                              }}
+                            >
+                              ❄️ Neige
+                            </button>
                           </div>
                           
                           {/* Boutons pour cacher les années */}
                           <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-                            {cloudEffect.map(d => (
+                            {(selectedEffect === 'nuages' ? cloudEffect : snowEffect)?.map(d => (
                               <button
                                 key={d.annee}
                                 onClick={() => {
@@ -4335,7 +4391,7 @@ const DataAnalyzer = () => {
                           
                           <ResponsiveContainer width="100%" height={280}>
                             <BarChart 
-                              data={cloudEffect.filter(d => !hiddenYears.includes(d.annee))}
+                              data={(selectedEffect === 'nuages' ? cloudEffect : snowEffect)?.filter(d => !hiddenYears.includes(d.annee)) || []}
                               margin={{ top: 20, right: 10, left: 10, bottom: 60 }}
                             >
                               <CartesianGrid strokeDasharray="3 3" stroke="rgba(100, 200, 255, 0.1)" />
@@ -4367,7 +4423,7 @@ const DataAnalyzer = () => {
                                 }}
                               />
                               <Bar dataKey="effet" radius={[4, 4, 0, 0]}>
-                                {cloudEffect.filter(d => !hiddenYears.includes(d.annee)).map((entry, index) => (
+                                {((selectedEffect === 'nuages' ? cloudEffect : snowEffect)?.filter(d => !hiddenYears.includes(d.annee)) || []).map((entry, index) => (
                                   <Cell 
                                     key={`cell-${index}`}
                                     fill={entry.effet >= 0 ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.9)'}
